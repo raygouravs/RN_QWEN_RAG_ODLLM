@@ -10,12 +10,14 @@ export default function NavDrawerLayout() {
       <Drawer>
         <Drawer.Screen name='index' options={{
           drawerLabel: 'Home',
-          title: 'Home'
+          title: 'Home',
+          headerShadowVisible: true
         }}/>
 
         <Drawer.Screen name='settings' options={{
           drawerLabel: 'Settings',
-          title: 'Settings'
+          title: 'Settings',
+          headerShadowVisible: true
         }}/>
     </Drawer>
   );
