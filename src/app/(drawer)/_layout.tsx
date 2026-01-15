@@ -9,8 +9,8 @@ export default function NavDrawerLayout() {
   return (
       <Drawer>
         <Drawer.Screen name='index' options={{
-          drawerLabel: 'Home',
-          title: 'Home',
+          drawerLabel: 'Qwen-0.5-instruct-4_bit-ODLLM',
+          title: 'Qwen-0.5-instruct-ODLLM',
           headerShadowVisible: true
         }}/>
 
