@@ -21,15 +21,13 @@ export default function HomeScreen() {
     }
 
     return(
-        <SafeAreaView style={{flex: 1}}>
-        <KeyboardAwareScrollView style={{flex: 1}} contentContainerStyle={{ padding: 16 }} bottomOffset={0} keyboardDismissMode='interactive'>
-            <View style = {{flex: 1}}>
+        <SafeAreaView style={{flex: 1}} edges={['bottom', 'left', 'right']}>
+        <KeyboardAwareScrollView style={{flex: 1}} contentContainerStyle={{ flexGrow: 1, padding: 5 }} bottomOffset={0} keyboardDismissMode='interactive'>
                 <View style = {styles.topView}>
                     <Label>
                         Upload a PDF file to continue... QWEN will then answer your questions from it...
                     </Label>
                 </View>
-            </View>  
         </KeyboardAwareScrollView>
         <KeyboardStickyView>
             <View style = {styles.bottomView}>
