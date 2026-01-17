@@ -2,6 +2,7 @@ import { AppDarkTheme } from '@/constants/Colors';
 import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -14,6 +15,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
+    <KeyboardProvider>
     <ThemeProvider value={colorScheme === 'dark' ? AppDarkTheme : AppDarkTheme}>
       <Stack>
         <Stack.Screen name='(drawer)' options={{
@@ -22,5 +24,6 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
+    </KeyboardProvider>
   );
 }

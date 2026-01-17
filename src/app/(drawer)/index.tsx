@@ -1,13 +1,15 @@
 import { AppDarkTheme } from '@/constants/Colors';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Label } from '@react-navigation/elements';
 import React, { useState } from "react";
-import { KeyboardAvoidingView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
   
 export default function HomeScreen() {
-    const [isFileUpload, setIsFileUpload] = useState();
+    const [isFileUpload, setIsFileUpload] = useState(false);
     const insets = useSafeAreaInsets();
 
     function handleSend() {
@@ -20,28 +22,34 @@ export default function HomeScreen() {
 
     return(
         <SafeAreaView style={{flex: 1}}>
-        <KeyboardAvoidingView style={{flex: 1}} behavior='height'>
+        <KeyboardAwareScrollView style={{flex: 1}} contentContainerStyle={{ padding: 16 }} bottomOffset={0} keyboardDismissMode='interactive'>
             <View style = {{flex: 1}}>
                 <View style = {styles.topView}>
+                    <Label>
+                        Upload a PDF file to continue... QWEN will then answer your questions from it...
+                    </Label>
                 </View>
             </View>  
-            <View style = {{...styles.bottomView, marginBottom: insets.bottom + 100}}>
+        </KeyboardAwareScrollView>
+        <KeyboardStickyView>
+            <View style = {styles.bottomView}>
                     <TouchableOpacity style={styles.uploadBtn}
                         onPress={handleFileUpload}
                     >
                         <Entypo name="attachment" size={18} color="white" />
                     </TouchableOpacity>
                     <TextInput style={styles.inputBar} 
-                        placeholder="Ask me anything..."
+                        placeholder="Ask QWEN-0.5"
                     >
                     </TextInput>
                     <TouchableOpacity style={styles.sendBtn}
                         onPress={handleSend}
+                        disabled={!isFileUpload}
                     >
-                        <MaterialCommunityIcons name="upload-circle-outline" size={18} color="white" />
+                        <AntDesign name="arrow-up" size={18} color="black" />
                     </TouchableOpacity>
             </View> 
-        </KeyboardAvoidingView>
+        </KeyboardStickyView>
         </SafeAreaView>
     );
 }
@@ -71,7 +79,7 @@ const styles = StyleSheet.create({
         marginRight: 5
     },
     sendBtn: {
-        backgroundColor: '#00274F',
+        backgroundColor: AppDarkTheme.colors.border,
         alignItems: 'center',
         justifyContent: 'center',
         height: 40,
