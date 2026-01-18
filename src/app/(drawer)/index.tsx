@@ -1,9 +1,8 @@
 import { AppDarkTheme } from '@/constants/Colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
-import { Label } from '@react-navigation/elements';
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,7 +12,14 @@ export default function HomeScreen() {
     const insets = useSafeAreaInsets();
 
     function handleSend() {
-
+        if(!isFileUpload){
+            Alert.alert(
+                "Alert",
+                "Upload a PDF file to continue... QWEN will then answer your prompts from the PDF...",
+                [{text: "OK", onPress: () => console.log('OK')}]
+            );
+            return;
+        }
     }
 
     function handleFileUpload(){
@@ -24,9 +30,6 @@ export default function HomeScreen() {
         <SafeAreaView style={{flex: 1}} edges={['bottom', 'left', 'right']}>
         <KeyboardAwareScrollView style={{flex: 1}} contentContainerStyle={{ flexGrow: 1, padding: 5 }} bottomOffset={0} keyboardDismissMode='interactive'>
                 <View style = {styles.topView}>
-                    <Label>
-                        Upload a PDF file to continue... QWEN will then answer your questions from it...
-                    </Label>
                 </View>
         </KeyboardAwareScrollView>
         <KeyboardStickyView>
@@ -42,7 +45,6 @@ export default function HomeScreen() {
                     </TextInput>
                     <TouchableOpacity style={styles.sendBtn}
                         onPress={handleSend}
-                        disabled={!isFileUpload}
                     >
                         <AntDesign name="arrow-up" size={18} color="black" />
                     </TouchableOpacity>
@@ -58,7 +60,17 @@ const styles = StyleSheet.create({
         flex: 1
     },
     topView: {
-        flex: 1
+        flex: 1,
+        width: '100%',
+        alignItems: 'center'
+    },
+    labelText: {
+        flexShrink: 1,
+        color: AppDarkTheme.colors.card,
+        fontSize: 18,
+        textAlign: 'left',
+        backgroundColor: AppDarkTheme.colors.primary,
+        padding: 5
     },
     bottomView: {
         flexDirection: 'row',
