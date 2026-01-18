@@ -1,45 +1,86 @@
 import { AppDarkTheme } from '@/constants/Colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
+import { pick, types } from '@react-native-documents/picker';
 import React, { useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-  
+
+
 export default function HomeScreen() {
     const [isFileUpload, setIsFileUpload] = useState(false);
     const insets = useSafeAreaInsets();
 
+    async function pickPdfFile() {
+        try {
+            const result = await pick({
+                type: [types.pdf],
+                allowMultiSelection: false,
+                copyTo: 'cachesDirectory', // VERY important on iOS
+            });
+
+            // result is always an array
+            const file = result[0];
+
+            return {
+                uri: file.uri,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+            };
+        } catch (err: any) {
+            if (err?.code === 'DOCUMENT_PICKER_CANCELED') {
+                return null;
+            }
+            throw err;
+        }
+    }
+
+
     function handleSend() {
-        if(!isFileUpload){
+        if (!isFileUpload) {
             Alert.alert(
                 "Alert",
                 "Upload a PDF file to continue... QWEN will then answer your prompts from the PDF...",
-                [{text: "OK", onPress: () => console.log('OK')}]
+                [{ text: "OK", onPress: () => console.log('OK') }]
             );
             return;
         }
     }
 
-    function handleFileUpload(){
-
+    async function handleFileUpload() {
+        try {
+            const pickedFileObj = await pickPdfFile();
+            Alert.alert(
+                "Alert",
+                `Picked filename: ${pickedFileObj?.name}`,
+                [{ text: "OK", onPress: () => console.log('OK') }]
+            );
+        } catch (err: any) {
+            Alert.alert(
+                "Error",
+                `Error name: ${err}`,
+                [{ text: "OK", onPress: () => console.log('OK') }]
+            );
+        }
     }
 
-    return(
-        <SafeAreaView style={{flex: 1}} edges={['bottom', 'left', 'right']}>
-        <KeyboardAwareScrollView style={{flex: 1}} contentContainerStyle={{ flexGrow: 1, padding: 5 }} bottomOffset={0} keyboardDismissMode='interactive'>
-                <View style = {styles.topView}>
+    return (
+        <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
+            <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, padding: 5 }} bottomOffset={0} keyboardDismissMode='interactive'>
+                <View style={styles.topView}>
                 </View>
-        </KeyboardAwareScrollView>
-        <KeyboardStickyView>
-            <View style = {styles.bottomView}>
+            </KeyboardAwareScrollView>
+            <KeyboardStickyView>
+                <View style={styles.bottomView}>
                     <TouchableOpacity style={styles.uploadBtn}
                         onPress={handleFileUpload}
                     >
                         <Entypo name="attachment" size={18} color="white" />
                     </TouchableOpacity>
-                    <TextInput style={styles.inputBar} 
+                    <TextInput style={styles.inputBar}
                         placeholder="Ask QWEN-0.5"
                     >
                     </TextInput>
@@ -48,8 +89,8 @@ export default function HomeScreen() {
                     >
                         <AntDesign name="arrow-up" size={18} color="black" />
                     </TouchableOpacity>
-            </View> 
-        </KeyboardStickyView>
+                </View>
+            </KeyboardStickyView>
         </SafeAreaView>
     );
 }
