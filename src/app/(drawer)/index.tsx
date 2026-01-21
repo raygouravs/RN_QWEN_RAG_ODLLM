@@ -2,8 +2,10 @@ import { AppDarkTheme } from '@/constants/Colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import { pick, types } from '@react-native-documents/picker';
+import { extractText, isAvailable } from 'expo-pdf-text-extract';
 import React, { useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import RNFS from 'react-native-fs';
 import { TextInput } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -38,6 +40,35 @@ export default function HomeScreen() {
         }
     }
 
+    async function getReadablePdfPath(uri: string): Promise<string> {
+        if (Platform.OS === 'ios') {
+            // iOS already gives file:// path when copyTo is used
+            return uri.replace('file://', '');
+        }
+
+        // Android: content:// must be copied manually
+        if (uri.startsWith('content://')) {
+            const destPath = `${RNFS.CachesDirectoryPath}/picked.pdf`;
+            await RNFS.copyFile(uri, destPath);
+            return destPath;
+        }
+        return uri;
+    }
+
+    async function extractTextFromPDFPath(uri: string) {
+        // Check if native module is available
+        if (isAvailable()) {
+            // Extract text from a PDF file
+            const text = await extractText(await getReadablePdfPath(uri));
+            console.log(text);
+            Alert.alert(
+                "Extracted Text",
+                `${text}`,
+                [{ text: "OK", onPress: () => console.log('OK') }]
+            );
+        }
+    }
+
 
     function handleSend() {
         if (!isFileUpload) {
@@ -53,11 +84,13 @@ export default function HomeScreen() {
     async function handleFileUpload() {
         try {
             const pickedFileObj = await pickPdfFile();
-            Alert.alert(
-                "Alert",
-                `Picked filename: ${pickedFileObj?.name}`,
-                [{ text: "OK", onPress: () => console.log('OK') }]
-            );
+            // Alert.alert(
+            //     "Alert",
+            //     `Picked filename: ${pickedFileObj?.name}`,
+            //     [{ text: "OK", onPress: () => console.log('OK') }]
+            // );
+            extractTextFromPDFPath(pickedFileObj?.uri ?? "")
+
         } catch (err: any) {
             Alert.alert(
                 "Error",
